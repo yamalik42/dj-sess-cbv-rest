@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang='en'>
+    <head>
+        <title>Authors List</title>
+    </head>
+    <body>
+        {% for obj in object_list %}
+        <button onclick='del(this.name)' name={{obj.id}} type='button' style='display: inline; color: red;'>DELETE</button>
+        <button onclick='upd(this.id)' id={{obj.id}} type='button' style='display: inline; color: blue;'>UPDATE</button>
+        First Name: <input type='text' class={{obj.id}} value={{obj.first_name}}> &nbsp&nbsp 
+        Last Name: <input type='text' class={{obj.id}} value={{obj.last_name}}> 
+        <br>
+        {% endfor %}
+        <br><br>
+        <form method='POST' action='/author/create' style='margin-left: 50px;'>
+            {% csrf_token %}
+            <input type='Submit' value='ADD' style='color: green;' />
+            {{ form }}
+        </form>
+
+        <script>
+            var token = '{{ csrf_token }}'
+
+            function del(id) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        location.reload()
+                    }
+                };
+                url = "/author/"+id
+                xhttp.open("DELETE", url, true);
+                xhttp.setRequestHeader("X-CSRFToken", token)
+                xhttp.send();
+            }
+
+            function upd(id) {
+                updates = document.getElementsByClassName(id)
+                var info = {
+                    'first_name': updates[0]['value'],
+                    'last_name': updates[1]['value']
+                }
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        location.reload()
+                    }
+                };
+
+                url = "/author/"+id
+                xhttp.open("PUT", url, true);
+                xhttp.setRequestHeader("X-CSRFToken", token)
+                
+                xhttp.send(JSON.stringify(info));
+            }
+        </script>
+    </body>
+</html>
